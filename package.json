@@ -2,72 +2,77 @@
   "name": "codacy-remark-lint",
   "version": "1.0.0",
   "description": "Codacy wrapper to support remark-lint analysis of Markdown files",
+  "keywords": [],
+  "repository": "https://github.com/codacy/codacy-remark-lint",
+  "license": "MIT",
   "author": {
     "name": "Rodrigo Fernandes",
     "email": "rtfrodrigo@gmail.com"
   },
-  "bin": {
-    "codacy-remark-lint": "build/main/index.js",
-    "codacy-docs": "build/main/codacy-docs.js"
-  },
   "main": "build/main/index.js",
-  "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/codacy/codacy-remark-lint",
-  "license": "MIT",
-  "keywords": [],
+  "typings": "build/main/index.d.ts",
+  "bin": {
+    "codacy-docs": "build/main/codacy-docs.js",
+    "codacy-remark-lint": "build/main/index.js"
+  },
   "scripts": {
-    "info": "npm-scripts-info",
-    "docs:gen": "node build/main/codacy-docs.js",
-    "docker:login": "docker login -u $DOCKER_USER -p $DOCKER_PASS",
-    "docker:build": "docker build --no-cache --tag codacy/codacy-remark-lint:dev .",
+    "all": "run-s reset test cov:check doc:html",
     "build": "run-s clean && run-p build:*",
     "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
-    "fix": "run-s fix:*",
-    "fix:prettier": "prettier \"src/**/*.ts\" --write",
-    "fix:tslint": "tslint --fix --project .",
-    "fix:markdown": "remark --rc-path .remarkrc.js . -o",
-    "test": "run-s build test:*",
-    "test:tslint": "tslint --project .",
-    "test:prettier": "prettier \"src/**/*.ts\" --list-different",
-    "test:markdown": "remark --rc-path .remarkrc.js .",
-    "test:lint": "run-s test:tslint && run-s test:prettier && run-s test:markdown",
-    "test:unit": "nyc ava",
-    "watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
+    "clean": "trash build test",
     "cov": "run-s build test:unit cov:html && opn coverage/index.html",
+    "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
     "cov:html": "nyc report --reporter=html",
     "cov:send": "nyc report --reporter=lcov && cat coverage/lcov.info | codacy-coverage",
-    "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
     "doc": "run-s doc:html && opn build/docs/index.html",
     "doc:html": "typedoc src/ --target ES6 --mode file --out build/docs",
     "doc:json": "typedoc src/ --target ES6 --mode file --json build/docs/typedoc.json",
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
-    "version": "standard-version",
-    "reset": "git clean -dfx && git reset --hard && npm i",
-    "clean": "trash build test",
-    "all": "run-s reset test cov:check doc:html",
+    "docker:build": "docker build --no-cache --tag codacy/codacy-remark-lint:dev .",
+    "docker:login": "docker login -u $DOCKER_USER -p $DOCKER_PASS",
+    "docs:gen": "node build/main/codacy-docs.js",
+    "fix": "run-s fix:*",
+    "fix:markdown": "remark --rc-path .remarkrc.js . -o",
+    "fix:prettier": "prettier \"src/**/*.ts\" --write",
+    "fix:eslint": "eslint --fix --project .",
+    "info": "npm-scripts-info",
+    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('codacy-remark-lint must be installed with Yarn: https://yarnpkg.com/')\"",
     "prepare-release": "run-s all version doc:publish",
-    "preinstall": "node -e \"if(process.env.npm_execpath.indexOf('yarn') === -1) throw new Error('codacy-remark-lint must be installed with Yarn: https://yarnpkg.com/')\""
+    "reset": "git clean -dfx && git reset --hard && npm i",
+    "test": "run-s build test:*",
+    "test:lint": "run-s test:eslint && run-s test:prettier && run-s test:markdown",
+    "test:markdown": "remark --rc-path .remarkrc.js .",
+    "test:prettier": "prettier \"src/**/*.ts\" --list-different",
+    "test:eslint": "eslint --project .",
+    "test:unit": "nyc ava",
+    "version": "standard-version",
+    "watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\""
   },
-  "scripts-info": {
-    "info": "Display information about the package scripts",
-    "build": "Clean and rebuild the project",
-    "fix": "Try to automatically fix any linting problems",
-    "test": "Lint and unit test the project",
-    "watch": "Watch and rebuild the project on save, then rerun relevant tests",
-    "cov": "Rebuild, run tests, then create and open the coverage report",
-    "doc": "Generate HTML API documentation and open it in a browser",
-    "doc:json": "Generate API documentation in typedoc JSON format",
-    "version": "Bump package.json version, update CHANGELOG.md, tag release",
-    "reset": "Delete all untracked files and reset the repo to the last commit",
-    "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   },
-  "engines": {
-    "node": ">=8"
+  "prettier": {
+    "singleQuote": true
+  },
+  "ava": {
+    "failFast": true,
+    "files": [
+      "build/main/**/*.spec.js"
+    ],
+    "sources": [
+      "build/main/**/*.js"
+    ]
+  },
+  "nyc": {
+    "exclude": [
+      "**/*.spec.js"
+    ]
   },
   "dependencies": {
-    "@types/tmp": "^0.0.33",
     "dictionary-en-us": "^2.0.0",
     "fs-extra": "^7.0.0",
     "markdown-extensions": "^1.1.1",
@@ -177,12 +182,15 @@
   },
   "devDependencies": {
     "@types/node": "^10.9.4",
+    "@types/tmp": "^0.0.33",
     "@types/trim": "^0.1.0",
     "@types/vfile": "^2.2.2",
+    "@types/vfile-message": "^2.0.0",
     "ava": "1.0.0-beta.7",
     "codacy-coverage": "^3.0.0",
     "cz-conventional-changelog": "^2.1.0",
     "dox": "^0.9.0",
+    "eslint": "^6.8.0",
     "gh-pages": "^1.2.0",
     "npm-run-all": "^4.1.3",
     "npm-scripts-info": "^0.3.9",
@@ -193,36 +201,26 @@
     "strip-indent": "^2.0.0",
     "trash-cli": "^1.4.0",
     "trim": "^0.0.1",
-    "tslint": "^5.10.0",
-    "tslint-config-prettier": "^1.13.0",
-    "tslint-config-semistandard": "^7.0.0",
-    "tslint-immutable": "^4.5.4",
     "typedoc": "^0.12.0",
     "typescript": "^3.0.1",
     "vfile-location": "^2.0.3",
     "vfile-message": "^1.0.1",
     "vfile-reporter": "^5.0.0"
   },
-  "ava": {
-    "failFast": true,
-    "files": [
-      "build/main/**/*.spec.js"
-    ],
-    "sources": [
-      "build/main/**/*.js"
-    ]
+  "engines": {
+    "node": ">=8"
   },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  },
-  "prettier": {
-    "singleQuote": true
-  },
-  "nyc": {
-    "exclude": [
-      "**/*.spec.js"
-    ]
+  "scripts-info": {
+    "info": "Display information about the package scripts",
+    "build": "Clean and rebuild the project",
+    "fix": "Try to automatically fix any linting problems",
+    "test": "Lint and unit test the project",
+    "watch": "Watch and rebuild the project on save, then rerun relevant tests",
+    "cov": "Rebuild, run tests, then create and open the coverage report",
+    "doc": "Generate HTML API documentation and open it in a browser",
+    "doc:json": "Generate API documentation in typedoc JSON format",
+    "version": "Bump package.json version, update CHANGELOG.md, tag release",
+    "reset": "Delete all untracked files and reset the repo to the last commit",
+    "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
   }
 }

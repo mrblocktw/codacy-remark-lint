@@ -16,7 +16,6 @@ export default function allRules(): ReadonlyArray<Rule> {
     })
     .filter(r => r !== undefined) as ReadonlyArray<Rule>;
 
-  // tslint:disable-next-line:no-expression-statement
   fs.removeSync(remarkLintPath);
 
   return parsedRules;
@@ -25,7 +24,6 @@ export default function allRules(): ReadonlyArray<Rule> {
 function cloneRemarkLint(): string {
   const tmpDir = tmp.dirSync().name;
 
-  // tslint:disable-next-line:no-expression-statement
   execSync(`git clone git://github.com/remarkjs/remark-lint ${tmpDir}`);
 
   return tmpDir;

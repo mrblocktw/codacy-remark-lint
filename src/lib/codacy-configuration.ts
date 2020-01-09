@@ -65,10 +65,8 @@ function parseCodacyConfiguration(
     const codacyConfig = JSON.parse(configFileContents) as CodacyConfiguration;
     return codacyConfig;
   } catch (err) {
-    // tslint:disable-next-line:no-expression-statement
     process.stderr.write(`${err}\n`);
     process.exit(50);
-    return;
   }
 }
 

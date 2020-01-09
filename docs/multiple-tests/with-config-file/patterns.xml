@@ -1,0 +1,6 @@
+<module name="root">
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="\.remarklrc" />
+    </module>
+    <module name="remark-lint-no-empty-url" />
+</module>

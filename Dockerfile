@@ -1,18 +1,21 @@
-FROM node:8-alpine AS build
+ARG NODE_IMAGE_VERSION=13-alpine
 
-LABEL maintainer="Rodrigo Fernandes <rodrigo@codacy.com>"
+FROM node:$NODE_IMAGE_VERSION AS builder
 
 ENV NODE_PATH /usr/lib/node_modules
 
-COPY . /workdir
-
 WORKDIR /workdir
 
-RUN \
-    yarn && \
-    yarn run build
+COPY package.json .
+COPY yarn.lock .
 
-FROM node:8-alpine
+RUN yarn
+
+COPY . .
+
+RUN yarn run build
+
+FROM node:$NODE_IMAGE_VERSION
 
 LABEL maintainer="Rodrigo Fernandes <rodrigo@codacy.com>"
 
@@ -21,11 +24,11 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 RUN adduser -u 2004 -D docker
 
-COPY --from=build --chown=docker:docker /workdir/build/main /app/build/main
-COPY --from=build --chown=docker:docker /workdir/package.json /app/package.json
-COPY --from=build --chown=docker:docker /workdir/yarn.lock /app/yarn.lock
-COPY --from=build --chown=docker:docker /workdir/docs /docs
-COPY --from=build --chown=docker:docker /workdir/docs-tests /docs/tests
+COPY --from=builder --chown=docker:docker /workdir/build/main /app/build/main
+COPY --from=builder --chown=docker:docker /workdir/package.json /app/package.json
+COPY --from=builder --chown=docker:docker /workdir/yarn.lock /app/yarn.lock
+COPY --from=builder --chown=docker:docker /workdir/docs /docs
+COPY --from=builder --chown=docker:docker /workdir/docs-tests /docs/tests
 
 WORKDIR /app
 

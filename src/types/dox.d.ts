@@ -69,7 +69,6 @@ declare module 'dox' {
     name?: string;
     string?: string;
     description?: string;
-    // tslint:disable-next-line:no-any
     types?: (string | { [name: string]: any })[];
     typesDescription?: string;
     optional?: boolean;

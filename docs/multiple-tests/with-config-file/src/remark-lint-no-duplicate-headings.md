@@ -1,0 +1,1 @@
+../../../../docs-tests/remark-lint-no-duplicate-headings.md

@@ -5,8 +5,6 @@ import path from 'path';
 import getAllRules from './docs/documentation-builder';
 import { Rule } from './docs/util/rule';
 
-/* tslint:disable:no-expression-statement*/
-
 const root = path.resolve(__dirname);
 const docsPath = path.resolve(`${root}/../../docs`);
 const descripionPath = path.resolve(`${docsPath}/description`);
@@ -43,8 +41,6 @@ fs.writeFileSync(
   remark-lint is built on remark, a powerful markdown processor powered by plugins.`
 );
 
-/* tslint:enable:no-expression-statement*/
-
 function getPatterns(rules: ReadonlyArray<Rule>): object {
   const patterns = rules.map((rule: Rule) => {
     const parameters = rule.defaultValue
@@ -66,7 +62,6 @@ function getPatterns(rules: ReadonlyArray<Rule>): object {
     };
   });
 
-  // tslint:disable-next-line:no-unsafe-any
   const toolVersion = require('../../package.json').dependencies[
     'remark-lint'
   ].replace('^', '');

@@ -1,4 +1,3 @@
-// tslint:disable:no-expression-statement
 import test from 'ava';
 import * as path from 'path';
 import { Configuration, EmptyConfiguration } from './codacy-configuration';

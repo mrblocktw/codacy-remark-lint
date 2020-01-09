@@ -2,8 +2,6 @@
 
 import run from './lib/remark-runner';
 
-/* tslint:disable:no-expression-statement*/
-
 run().then(
   results => {
     results.forEach(result => {
@@ -17,5 +15,3 @@ run().then(
     process.exit(1);
   }
 );
-
-/* tslint:enable:no-expression-statement*/
