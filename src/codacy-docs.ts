@@ -13,11 +13,17 @@ const descripionPath = path.resolve(`${docsPath}/description`);
 
 const allRules = getAllRules();
 
-if (fs.existsSync(docsPath)) {
-  fs.removeSync(docsPath);
+function removeGeneratedFiles() {
+  fs.removeSync(`${docsPath}/patterns.json`);
+  fs.removeSync(descripionPath);
 }
 
-fs.mkdirSync(docsPath);
+if (fs.existsSync(docsPath)) {
+  removeGeneratedFiles()
+} else {
+  fs.mkdirSync(docsPath);
+}
+
 fs.mkdirSync(descripionPath);
 
 fs.writeFileSync(
@@ -49,13 +55,13 @@ function getPatterns(rules: ReadonlyArray<Rule>): object {
   const patterns = rules.map((rule: Rule) => {
     const parameters = rule.defaultValue
       ? {
-          parameters: [
-            {
-              default: rule.defaultValue,
-              name: rule.ruleId
-            }
-          ]
-        }
+        parameters: [
+          {
+            default: rule.defaultValue,
+            name: rule.ruleId
+          }
+        ]
+      }
       : {};
 
     return {
@@ -78,13 +84,13 @@ function getDescriptions(rules: ReadonlyArray<Rule>): ReadonlyArray<object> {
   return rules.map((rule: Rule) => {
     const parameters = rule.defaultValue
       ? {
-          parameters: [
-            {
-              description: rule.ruleId,
-              name: rule.ruleId
-            }
-          ]
-        }
+        parameters: [
+          {
+            description: rule.ruleId,
+            name: rule.ruleId
+          }
+        ]
+      }
       : {};
 
     return {
